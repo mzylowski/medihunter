@@ -1,3 +1,4 @@
+import requests
 from notifiers import get_notifier
 from notifiers.exceptions import BadArguments
 from os import environ
@@ -66,3 +67,16 @@ def xmpp_notify(message):
     except KeyError as e:
         print(f'XMPP notifications require NOTIFIERS_XMPP_JID, NOTIFIERS_XMPP_PASSWORD'
               f' and NOTIFIERS_XMPP_RECEIVER to be exported. Detailed exception:\n{e}')
+
+
+def slack_notify(message, title: str = None):
+    if message:
+        slack_token = environ['SLACK_TOKEN']
+
+        return requests.post('https://slack.com/api/chat.postMessage', {
+            'token': slack_token,
+            'channel': "#medicover",
+            'text': message + " <!channel>",
+            'icon_emoji': ':stethoscope:',
+            'username': "mz-notify"
+        }).json()
